@@ -95,7 +95,7 @@ def iir_filter(eeg_data, n):
     return y_filtered
 
 
-def butter_bandpass_filter(data, lowcut, highcut, fs, ds, order=2):
+def butter_bandpass_filter(data, lowcut, highcut, fs, order=2):
     nyq = 0.5 * fs
     low = lowcut /nyq
     high = highcut/nyq
@@ -161,7 +161,7 @@ if __name__ == '__main__':
 
             # sos = signal.butter(3, 38, 'hp', fs=freq, output='sos')
 
-            filtered = butter_bandpass_filter(ds1, 4, 30, freq, 2, 3)
+            filtered = butter_bandpass_filter(ds1, 4, 30, freq, 3)
 
             n = 10  # the larger n is, the smoother curve will be
             b = [1.0 / n] * n
