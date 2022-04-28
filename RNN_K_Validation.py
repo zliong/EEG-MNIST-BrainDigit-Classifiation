@@ -57,7 +57,7 @@ def create_model(dr, lr):
     model.add(keras.layers.MaxPooling1D(pool_size=1, strides=1))
     model.add(keras.layers.Conv1D(filters=20, kernel_size=10, activation='relu'))
 
-    model.add(keras.layers.Dropout(0.2))
+    model.add(keras.layers.Dropout(dr))
     model.add(keras.layers.Flatten())
 
     model.add(keras.layers.Dense(units=16, activation='relu'))
@@ -66,8 +66,8 @@ def create_model(dr, lr):
     model.add(keras.layers.Dense(units=10, activation='softmax'))
 
     opt = adam_v2.Adam(learning_rate=lr)
-    opt2 = keras.optimizers.RMSprop(learning_rate=lr)
-    opt3 = keras.optimizers.SGD(learning_rate=lr)
+    # opt2 = keras.optimizers.RMSprop(learning_rate=lr)
+    # opt3 = keras.optimizers.SGD(learning_rate=lr)
     model.compile(optimizer=opt,
                   loss='sparse_categorical_crossentropy',
                   metrics=['sparse_categorical_accuracy'])
@@ -76,8 +76,7 @@ def create_model(dr, lr):
 
 def dwt_filter(eeg_data, lvl, mode='soft'):
     scaled_eeg = eeg_data / 220
-    # denoised = denoise_wavelet(scaled_eeg, method='VisuShrink', mode='soft', wavelet_levels=lvl, wavelet='sym8',
-    #                            rescale_sigma=True)
+
     denoised = denoise_wavelet(scaled_eeg, method='VisuShrink', mode=mode, wavelet_levels=lvl, wavelet='sym8',
                                rescale_sigma=True)
     return denoised
@@ -129,8 +128,6 @@ def dc_filter(eeg_data, freq_sample):
     Fc = 3  # cut off freq (Hz), any dc offset should be removed between 1 and 5 hz
     Nyq = freq_sample / 2.  # Nyquist freq (1/2 Fs)
     normalized_cutoff_freq = float(Fc) / float(Nyq)
-    # dc_signal = eeg_data - np.mean(eeg_data)
-    # y_dc_filtered = np.fft.rfft(dc_signal)
     sos = signal.butter(n, normalized_cutoff_freq, btype='hp', output='sos', analog=False)
     y_dc_filtered = signal.sosfilt(sos, eeg_data)
     return y_dc_filtered
@@ -149,7 +146,7 @@ if __name__ == '__main__':
             T = 2
             N = freq * T
             N2 = freq2 * T
-            # print(x)
+
 
             eeg = np.array(x)
             length = len(eeg)
@@ -200,13 +197,10 @@ shuffle(s)
 X_data = X_train[s]
 Y_labels = y_train[s]
 summary = ''
-n = 0
+
 for r in range(len(dr)):
-    n = 0
     for c in range(len(lrs)):
-        n += 1
         kfolds = StratifiedKFold(n_splits=3, shuffle=True, random_state=2)
-        accuracies1 = []
         accuracies2 = []
         for train_mask, test_mask in kfolds.split(X_train, y_train):
             X_trainC = X_train[train_mask]
@@ -231,8 +225,7 @@ for r in range(len(dr)):
             if max(accuracies2) == acc:
                 best_hist = hist
 
-            summary += f'Iteration: {n}, Dropout: {dr[r]}, Learning Rate: {lrs[c]}; Accuracy: {acc} - {datetime.datetime.now()} \n'
-            print('Iteration:', n)
+            summary += f'Dropout: {dr[r]}, Learning Rate: {lrs[c]}; Accuracy: {acc} - {datetime.datetime.now()} \n'
         print(accuracies2, "\nAverage Accuracy: ", np.average(accuracies2))
 
 
