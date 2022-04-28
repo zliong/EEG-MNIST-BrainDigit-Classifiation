@@ -157,14 +157,13 @@ if __name__ == '__main__':
             yf = fft(dc_filtered) / N
             yf2 = fft(dc_filtered) / N2
             PSD = 2 * np.abs(yf[1:length//2+1])
-            PSD2 = 2 * np.abs(yf2[1:length//2+1])
+
 
             ds1 = dwt_filter(PSD, 2, 'hard')
-            ds2 = dwt_filter(PSD, 2, 'soft')
+
 
             # sos = signal.butter(3, 38, 'hp', fs=freq, output='sos')
-            # filtered6 = signal.sosfilt(sos, PSD)
-            # filtered7 = signal.sosfilt(sos, ds2)
+
             filtered = butter_bandpass_filter(ds1, 4, 30, freq, 2, 3)
 
             n = 10  # the larger n is, the smoother curve will be
