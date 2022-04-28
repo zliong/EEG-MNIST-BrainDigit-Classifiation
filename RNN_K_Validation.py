@@ -49,11 +49,11 @@ class MyThresholdCallback(tf.keras.callbacks.Callback):
 
 def create_model(dr, lr):
     model = keras.Sequential()
-    # model.add(keras.layers.GRU(units=256, return_sequences=True))
+
     model.add(keras.layers.Conv1D(filters=10, kernel_size=30, activation='relu', input_shape=(X_train.shape[1], X_train.shape[2])))
-    # model.add(keras.layers.Dropout(0.3))
+
     model.add(keras.layers.Conv1D(filters=10, kernel_size=30, activation='relu'))
-    # model.add(keras.layers.Dropout(0.5))
+
     model.add(keras.layers.MaxPooling1D(pool_size=1, strides=1))
     model.add(keras.layers.Conv1D(filters=20, kernel_size=10, activation='relu'))
 
@@ -61,10 +61,10 @@ def create_model(dr, lr):
     model.add(keras.layers.Flatten())
 
     model.add(keras.layers.Dense(units=16, activation='relu'))
-    # model.add(keras.layers.Dense(units=32, activation='relu'))
+
     model.add(keras.layers.Dense(units=32, activation='relu'))
     model.add(keras.layers.Dense(units=10, activation='softmax'))
-    # callback = MyThresholdCallback(threshold=0.9)
+
     opt = adam_v2.Adam(learning_rate=lr)
     opt2 = keras.optimizers.RMSprop(learning_rate=lr)
     opt3 = keras.optimizers.SGD(learning_rate=lr)
@@ -166,34 +166,15 @@ if __name__ == '__main__':
             # filtered6 = signal.sosfilt(sos, PSD)
             # filtered7 = signal.sosfilt(sos, ds2)
             filtered = butter_bandpass_filter(ds1, 4, 30, freq, 2, 3)
-            # filtered8 = notch_filter(ds1, 60, 30, freq)
-            #
-            # sos = signal.butter(2, 8, 'lp', fs=freq, output='sos')
-            # filtered = signal.sosfilt(sos, PSD)
-            # filtered2 = signal.sosfilt(sos, PSD2)
-            # filtered3 = butter_bandpass_filter(PSD, 8, 38, 220, 2, 2)
-            # filtered4 = butter_bandpass_filter(PSD2, 8, 38, 256, 2, 2)
-
-            # filtered = butter_bandpass_filter(dc_filtered, 8, 30, freq, 2)
-            # # dwt_filtered = dwt_filter(filtered, 2, 'hard')
-            # filtered2 = butter_bandpass_filter(dc_filtered, 4, 30, freq, 2)
-            # filtered3 = butter_bandpass_filter(eeg, 8, 30, freq, 2)
 
             n = 10  # the larger n is, the smoother curve will be
             b = [1.0 / n] * n
             a = 1
             eeg_filt = filtered
             eeg_filt = white_noise_augmentation(filtered, np.mean(filtered), 10, len(filtered))
-            # eeg_filt = dwt_filter(filtered,3)
-            # plt.plot(eeg_filt)
-            # plt.show()
-            # eeg_filt = eeg_filt[50:1610]
-            # eeg_filt2 = eeg_filt[10:1610]
 
             ar = np.asarray(eeg_filt)
-            # ar = lfilter(b, a, ar)
 
-            # r_ar = resize(ar, (1, 100), mode="constant")
             r_ar = resize(ar, (300, 1), mode="constant")
             filtered_arr.append(r_ar)
 
